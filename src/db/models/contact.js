@@ -3,26 +3,25 @@ import { model, Schema } from 'mongoose';
 const Contact = new Schema({
   name: {
     type: String,
-    required: [true, 'Set name for contact'],
+    required: true,
   },
-
   phoneNumber: {
     type: String,
-    required: [true, 'Set phone number for contact'],
+    required: true,
   },
-
   email: {
     type: String,
-    optional: true,
+    required: false,
   },
-
-  isFavorite: {
+  isFavourite: {
     type: Boolean,
+    required: true,
     default: false,
   },
   contactType: {
     type: String,
-    enum: ['work', 'personal', 'home'],
+    required: true,
+    enum: ['work', 'home', 'personal'],
     default: 'personal',
   },
 });
