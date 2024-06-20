@@ -1,6 +1,7 @@
 import { ContactsCollection } from '../db/models/contacts.js';
 import { SORT_ORDER } from '../constants/constants.js';
 import { paginationData } from '../utils/paginationData.js';
+import mongoose from 'mongoose';
 
 export const getAllContacts = async ({
   page = 1,
@@ -38,6 +39,9 @@ export const getAllContacts = async ({
 };
 
 export const getContactById = async (contactId) => {
+  if (!mongoose.Types.ObjectId.isValid(contactId)) {
+    return null;
+  }
   const contact = await ContactsCollection.findById(contactId);
   return contact;
 };
