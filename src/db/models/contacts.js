@@ -24,6 +24,14 @@ const Contact = new Schema({
     enum: ['work', 'home', 'personal'],
     default: 'personal',
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 export const ContactsCollection = model('contacts', Contact);
