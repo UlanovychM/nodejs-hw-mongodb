@@ -8,8 +8,22 @@ import {
   deleteContact,
 } from '../services/contacts.js';
 
+import { filterParams } from '../utils/filterParams.js';
+import { sortParams } from '../utils/sortParams.js';
+import { paginationParams } from '../utils/paginationParams.js';
+
 export const getContactsController = async (req, res) => {
-  const contacts = await getAllContacts();
+  const { page, perPage } = paginationParams(req.query);
+  const { sortBy, sortOrder } = sortParams(req.query);
+  const filter = filterParams(req.query);
+
+  const contacts = await getAllContacts({
+    page,
+    perPage,
+    sortBy,
+    sortOrder,
+    filter,
+  });
 
   res.json({
     status: 200,
