@@ -93,7 +93,6 @@ export const patchContactController = async (req, res, next) => {
 
 export const deleteContactController = async (req, res, next) => {
   const authContactId = setAuthContactId(req);
-
   const contact = await deleteContact(authContactId);
 
   if (!contact) {
