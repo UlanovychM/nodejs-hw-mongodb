@@ -46,7 +46,7 @@ export const getContactById = async (contactId) => {
   if (!mongoose.Types.ObjectId.isValid(contactId)) {
     return null;
   }
-  const contact = await ContactsCollection.findById(contactId);
+  const contact = await ContactsCollection.findOne(contactId);
   return contact;
 };
 
