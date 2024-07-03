@@ -61,12 +61,12 @@ export const getContactByIdController = async (req, res, next) => {
 
   res.json({
     status: 200,
-    message: `Successfully found contact with id ${contactId}!`,
+    message: `Successfully found contact with id ${authContactId}!`,
     data: contact,
   });
 };
 export const createContactController = async (req, res) => {
-  const contact = await createContact(req.body);
+  const contact = await createContact({ userId: req.user._id, ...req.body });
 
   res.status(201).json({
     status: 201,
