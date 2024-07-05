@@ -29,9 +29,17 @@ const setupSession = (res, session) => {
 
 export const loginUserController = async (req, res) => {
   const session = await loginUser(req.body);
-  setupSession(res, session);
 
-  res.status(200).json({
+  res.cookie('refreshToken', session.refreshToken, {
+    httpOnly: true,
+    expires: new Date(Date.now() + THIRTY_DAYS),
+  });
+  res.cookie('sessionId', session._id, {
+    httpOnly: true,
+    expires: new Date(Date.now() + THIRTY_DAYS),
+  });
+
+  res.json({
     status: 200,
     message: 'Successfully logged in an user!',
     data: {
@@ -45,9 +53,10 @@ export const refreshUserSessionController = async (req, res) => {
     sessionId: req.cookies.sessionId,
     refreshToken: req.cookies.refreshToken,
   });
+
   setupSession(res, session);
 
-  res.status(200).json({
+  res.json({
     status: 200,
     message: 'Successfully refreshed a session!',
     data: {

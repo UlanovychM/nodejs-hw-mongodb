@@ -7,12 +7,15 @@ import { SessionsCollection } from '../db/models/session.js';
 import { UsersCollection } from '../db/models/user.js';
 
 export const registerUser = async (payload) => {
-  const encryptedPassword = await bcrypt.hash(payload.password, 10);
+  const { name, email, password, createdAt, updatedAt, _id } = payload;
+  const user = await UsersCollection.findOne({ email });
+  if (user) {
+    throw createHttpError(409, 'Email in use.');
+  }
+  const encryptedPassword = await bcrypt.hash(password, 10);
+  await UsersCollection.create({ ...payload, password: encryptedPassword });
 
-  return await UsersCollection.create({
-    ...payload,
-    password: encryptedPassword,
-  });
+  return { email, name, createdAt, updatedAt, _id };
 };
 
 const createSession = () => {
@@ -28,12 +31,13 @@ const createSession = () => {
 };
 
 export const loginUser = async (payload) => {
-  const user = await UsersCollection.findOne({ email: payload.email });
+  const { email, password } = payload;
+  const user = await UsersCollection.findOne({ email: email });
   if (!user) {
     throw createHttpError(401, 'User not found');
   }
 
-  const isEqual = await bcrypt.compare(payload.password, user.password);
+  const isEqual = await bcrypt.compare(password, user.password);
 
   if (!isEqual) {
     throw createHttpError(401, 'Unauthorized');
@@ -41,11 +45,15 @@ export const loginUser = async (payload) => {
 
   await SessionsCollection.deleteOne({ userId: user._id });
 
-  const newSession = createSession();
+  const accessToken = randomBytes(30).toString('base64');
+  const refreshToken = randomBytes(30).toString('base64');
 
   return await SessionsCollection.create({
     userId: user._id,
-    ...newSession,
+    accessToken,
+    refreshToken,
+    accessTokenValidUntil: new Date(Date.now() + FIFTEEN_MINUTES),
+    refreshTokenValidUntil: new Date(Date.now() + THIRTY_DAYS),
   });
 };
 
@@ -63,8 +71,6 @@ export const refreshUsersSession = async ({ sessionId, refreshToken }) => {
     throw createHttpError(401, 'Session not found');
   }
 
-  await SessionsCollection.deleteOne({ _id: sessionId });
-
   const isSessionTokenExpired =
     new Date() > new Date(session.refreshTokenValidUntil);
 
@@ -73,6 +79,8 @@ export const refreshUsersSession = async ({ sessionId, refreshToken }) => {
   }
 
   const newSession = createSession();
+
+  await SessionsCollection.deleteOne({ _id: sessionId, refreshToken });
 
   return await SessionsCollection.create({
     userId: session.userId,
