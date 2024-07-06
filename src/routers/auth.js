@@ -9,31 +9,21 @@ import {
   registerUserController,
 } from '../controllers/auth.js';
 
-export const authRouter = Router();
+export const router = Router();
 
-authRouter.post(
+router.post(
   '/register',
   validateBody(registerUserSchema),
   ctrlWrapper(registerUserController),
 );
 
-authRouter.post(
+router.post(
   '/login',
   validateBody(loginUserSchema),
   ctrlWrapper(loginUserController),
 );
 
-<<<<<<< HEAD
-authRouter.post('/logout', authenticate, ctrlWrapper(logoutUserController));
-
-authRouter.post(
-  '/refresh',
-  authenticate,
-  ctrlWrapper(refreshUserSessionController),
-);
-=======
 router.post('/logout', ctrlWrapper(logoutUserController));
 router.post('/refresh', ctrlWrapper(refreshUserSessionController));
 
 export default router;
->>>>>>> 67f0c21 (update)

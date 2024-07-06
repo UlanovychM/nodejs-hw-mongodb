@@ -15,24 +15,26 @@ import {
 } from '../validation/contacts.js';
 import { authenticate } from '../middleware/authenticate.js';
 
-export const contactsRouter = Router();
+const router = Router();
 
-contactsRouter.use(authenticate);
+router.use(authenticate);
 
-contactsRouter.get('/', ctrlWrapper(getContactsController));
+router.get('/', ctrlWrapper(getContactsController));
 
-contactsRouter.get('/:contactId', ctrlWrapper(getContactByIdController));
+router.get('/:contactId', ctrlWrapper(getContactByIdController));
 
-contactsRouter.post(
+router.post(
   '/',
   validateBody(createContactSchema),
   ctrlWrapper(createContactController),
 );
 
-contactsRouter.patch(
+router.patch(
   '/:contactId',
   validateBody(updateContactSchema),
   ctrlWrapper(patchContactController),
 );
 
-contactsRouter.delete('/:contactId', ctrlWrapper(deleteContactController));
+router.delete('/:contactId', ctrlWrapper(deleteContactController));
+
+export default router;
