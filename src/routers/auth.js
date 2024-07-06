@@ -10,25 +10,24 @@ import {
 } from '../controllers/auth.js';
 import { authenticate } from '../middleware/authenticate.js';
 
-const router = Router();
+export const authRouter = Router();
 
-router.post(
+authRouter.post(
   '/register',
   validateBody(registerUserSchema),
   ctrlWrapper(registerUserController),
 );
 
-router.post(
+authRouter.post(
   '/login',
   validateBody(loginUserSchema),
   ctrlWrapper(loginUserController),
 );
 
-router.post('/logout', authenticate, ctrlWrapper(logoutUserController));
-router.post(
+authRouter.post('/logout', authenticate, ctrlWrapper(logoutUserController));
+
+authRouter.post(
   '/refresh',
   authenticate,
   ctrlWrapper(refreshUserSessionController),
 );
-
-export default router;

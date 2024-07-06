@@ -32,7 +32,7 @@ const createSession = () => {
 
 export const loginUser = async (payload) => {
   const { email, password } = payload;
-  const user = await UsersCollection.findOne({ email: email });
+  const user = await UsersCollection.findOne({ email });
   if (!user) {
     throw createHttpError(401, 'User not found');
   }
