@@ -8,7 +8,6 @@ import {
   refreshUserSessionController,
   registerUserController,
 } from '../controllers/auth.js';
-import { authenticate } from '../middleware/authenticate.js';
 
 export const authRouter = Router();
 
@@ -24,6 +23,7 @@ authRouter.post(
   ctrlWrapper(loginUserController),
 );
 
+<<<<<<< HEAD
 authRouter.post('/logout', authenticate, ctrlWrapper(logoutUserController));
 
 authRouter.post(
@@ -31,3 +31,9 @@ authRouter.post(
   authenticate,
   ctrlWrapper(refreshUserSessionController),
 );
+=======
+router.post('/logout', ctrlWrapper(logoutUserController));
+router.post('/refresh', ctrlWrapper(refreshUserSessionController));
+
+export default router;
+>>>>>>> 67f0c21 (update)
