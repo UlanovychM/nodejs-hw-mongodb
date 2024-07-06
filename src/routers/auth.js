@@ -7,16 +7,9 @@ import {
   logoutUserController,
   refreshUserSessionController,
   registerUserController,
-  requestResetEmailController,
-  resetPasswordController,
 } from '../controllers/auth.js';
-import { authenticate } from '../middleware/authenticate.js';
-import {
-  resetPasswordSchema,
-  requestResetEmailSchema,
-} from '../validation/auth.js';
 
-const router = Router();
+export const router = Router();
 
 router.post(
   '/register',
@@ -30,21 +23,7 @@ router.post(
   ctrlWrapper(loginUserController),
 );
 
-router.post('/logout', authenticate, ctrlWrapper(logoutUserController));
-router.post(
-  '/refresh',
-  authenticate,
-  ctrlWrapper(refreshUserSessionController),
-);
-router.post(
-  '/send-reset-email',
-  validateBody(requestResetEmailSchema),
-  ctrlWrapper(requestResetEmailController),
-);
-router.post(
-  '/reset-pwd',
-  validateBody(resetPasswordSchema),
-  ctrlWrapper(resetPasswordController),
-);
+router.post('/logout', ctrlWrapper(logoutUserController));
+router.post('/refresh', ctrlWrapper(refreshUserSessionController));
 
 export default router;
