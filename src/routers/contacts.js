@@ -13,6 +13,7 @@ import {
   updateContactSchema,
 } from '../validation/contacts.js';
 import { authenticate } from '../middleware/authenticate.js';
+import { upload } from '../middlewares/multer.js';
 
 const router = Router();
 
@@ -32,6 +33,12 @@ router.patch(
   '/:contactId',
   validateBody(updateContactSchema),
   ctrlWrapper(patchContactController),
+);
+router.post(
+  '/',
+  upload.single('photo'),
+  validateBody(createContactSchema),
+  ctrlWrapper(createContactController),
 );
 
 router.delete('/:contactId', ctrlWrapper(deleteContactController));
