@@ -1,6 +1,6 @@
 import createHttpError from 'http-errors';
 import mongoose from 'mongoose';
-
+import { env } from '../utils/env.js';
 import {
   getAllContacts,
   getContactById,
@@ -12,6 +12,8 @@ import {
 import { filterParams } from '../utils/filterParams.js';
 import { sortParams } from '../utils/sortParams.js';
 import { paginationParams } from '../utils/paginationParams.js';
+import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
+import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
 
 export const getContactsController = async (req, res) => {
   const { page, perPage } = paginationParams(req.query);
@@ -66,7 +68,19 @@ export const getContactByIdController = async (req, res, next) => {
 };
 export const createContactController = async (req, res) => {
   const { body } = req;
-  const contact = await createContact(body, req.user._id);
+  const photo = req.file;
+
+  let photoUrl;
+
+  if (photo) {
+    if (env('ENABLE_CLOUDINARY') === 'TRUE') {
+      photoUrl = await saveFileToCloudinary(photo);
+    } else {
+      photoUrl = await saveFileToUploadDir(photo);
+    }
+  }
+
+  const contact = await createContact(body, req.user._id, photoUrl);
 
   res.status(201).json({
     status: 201,
@@ -77,7 +91,24 @@ export const createContactController = async (req, res) => {
 
 export const patchContactController = async (req, res, next) => {
   const { contactId } = req.params;
-  const result = await patchContact(contactId, req.body, req.user._id);
+
+  const photo = req.file;
+
+  let photoUrl;
+
+  if (photo) {
+    if (env('ENABLE_CLOUDINARY') === 'TRUE') {
+      photoUrl = await saveFileToCloudinary(photo);
+    } else {
+      photoUrl = await saveFileToUploadDir(photo);
+    }
+  }
+
+  const result = await patchContact(
+    contactId,
+    { ...req.body, photo: photoUrl },
+    req.user._id,
+  );
   if (!result) {
     next(createHttpError(404, 'Contact not found'));
     return;
@@ -86,7 +117,7 @@ export const patchContactController = async (req, res, next) => {
   res.json({
     status: 200,
     message: `Successfully patched a contact!`,
-    data: result.student,
+    data: result.contact,
   });
 };
 
