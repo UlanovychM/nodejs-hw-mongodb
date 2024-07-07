@@ -38,6 +38,9 @@ const Contact = new Schema(
       type: Date,
       default: Date.now,
     },
+    photo: {
+      type: String,
+    },
   },
   {
     timestamps: true,
