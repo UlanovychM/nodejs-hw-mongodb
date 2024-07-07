@@ -1,6 +1,7 @@
 import { ContactsCollection } from '../db/models/contacts.js';
 import { SORT_ORDER } from '../constants/constants.js';
 import { paginationData } from '../utils/paginationData.js';
+import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
 
 export const getAllContacts = async ({
   page = 1,
