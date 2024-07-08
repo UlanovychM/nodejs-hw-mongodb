@@ -3,13 +3,14 @@ import { randomBytes } from 'crypto';
 import createHttpError from 'http-errors';
 
 import {
+  SMTP,
   FIFTEEN_MINUTES,
   THIRTY_DAYS,
   TEMPLATES_DIR,
 } from '../constants/constants.js';
 import { SessionsCollection } from '../db/models/session.js';
 import { UsersCollection } from '../db/models/user.js';
-import handlebars from 'handlebars';
+import Handlebars from 'handlebars';
 import { env } from '../utils/env.js';
 import { sendEmail } from '../utils/sendMail.js';
 import path from 'node:path';
@@ -103,7 +104,7 @@ export const requestResetToken = async (email) => {
       sub: user._id,
       email,
     },
-    env('JWT_SECRET'),
+    env(SMTP.JWT_SECRET),
     {
       expiresIn: '5m',
     },
@@ -117,19 +118,21 @@ export const requestResetToken = async (email) => {
     await fs.readFile(resetPasswordTemplatePath)
   ).toString();
 
-  const template = handlebars.compile(templateSource);
+  const template = Handlebars.compile(templateSource);
   const html = template({
     name: user.name,
-    link: `${env('APP_DOMAIN')}/reset-password?token=${resetToken}`,
+    link: `${env(SMTP.APP_DOMAIN)}/reset-password?token=${resetToken}`,
   });
+
   try {
     await sendEmail({
-      from: env('SMTP_FROM'),
+      from: env(SMTP.SMTP_FROM),
       to: email,
       subject: 'Reset your password',
       html,
     });
-  } catch {
+  } catch (error) {
+    console.log(error);
     throw createHttpError(
       500,
       'Failed to send the email, please try again later.',
