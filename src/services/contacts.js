@@ -47,25 +47,27 @@ export const getContactById = async (contactId, userId) => {
   return contact;
 };
 
-export const createContact = async (payload, userId) => {
+export const createContact = async (payload, userId, photo) => {
   const contact = await ContactsCollection.create({
     ...payload,
     userId: userId,
+    photo,
   });
   return contact;
 };
 
 export const patchContact = async (
   contactId,
-  payload,
+  { photo, ...payload },
   options = {},
   userId,
 ) => {
   const rawResult = await ContactsCollection.findOneAndUpdate(
     {
       _id: contactId,
+      userId,
     },
-    payload,
+    { ...payload, photo },
     { new: true, includeResultMetadata: true, ...options },
   ).where({ userId: userId });
 

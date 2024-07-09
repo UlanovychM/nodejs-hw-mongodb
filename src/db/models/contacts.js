@@ -14,6 +14,9 @@ const Contact = new Schema(
       type: String,
       required: false,
     },
+    photo: {
+      type: String,
+    },
     isFavourite: {
       type: Boolean,
       required: true,
@@ -37,9 +40,6 @@ const Contact = new Schema(
     updatedAt: {
       type: Date,
       default: Date.now,
-    },
-    photo: {
-      type: String,
     },
   },
   {
